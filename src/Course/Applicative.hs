@@ -61,8 +61,7 @@ infixl 4 <*>
   (a -> b)
   -> f a
   -> f b
-(<$>) =
-  error "todo: Course.Applicative#(<$>)"
+(<$>) f = (pure f <*>)
 
 -- | Insert into Id.
 --
@@ -74,14 +73,12 @@ instance Applicative Id where
   pure ::
     a
     -> Id a
-  pure =
-    error "todo: Course.Applicative pure#instance Id"
+  pure = Id
   (<*>) :: 
     Id (a -> b)
     -> Id a
     -> Id b
-  (<*>) =
-    error "todo: Course.Applicative (<*>)#instance Id"
+  (<*>) (Id f) (Id x) = Id (f x)
 
 -- | Insert into a List.
 --
@@ -93,14 +90,12 @@ instance Applicative List where
   pure ::
     a
     -> List a
-  pure =
-    error "todo: Course.Applicative pure#instance List"
+  pure x = x :. Nil
   (<*>) ::
     List (a -> b)
     -> List a
     -> List b
-  (<*>) =
-    error "todo: Course.Apply (<*>)#instance List"
+  (<*>) fs xs = flatMap (\f -> map (\x -> f x) xs) fs
 
 -- | Insert into an Optional.
 --
@@ -118,14 +113,13 @@ instance Applicative Optional where
   pure ::
     a
     -> Optional a
-  pure =
-    error "todo: Course.Applicative pure#instance Optional"
+  pure = Full
   (<*>) ::
     Optional (a -> b)
     -> Optional a
     -> Optional b
-  (<*>) =
-    error "todo: Course.Apply (<*>)#instance Optional"
+  (<*>) (Full f) (Full x) = Full (f x)
+  (<*>) _ _               = Empty
 
 -- | Insert into a constant function.
 --
@@ -149,8 +143,7 @@ instance Applicative ((->) t) where
   pure ::
     a
     -> ((->) t a)
-  pure =
-    error "todo: Course.Applicative pure#((->) t)"
+  pure = const
   (<*>) ::
     ((->) t (a -> b))
     -> ((->) t a)
@@ -206,8 +199,6 @@ lift2 =
 --
 -- >>> lift3 (\a b c -> a + b + c) Empty Empty (Full 9)
 -- Empty
---
--- >>> lift3 (\a b c -> a + b + c) length sum product (listh [4,5,6])
 -- 138
 lift3 ::
   Applicative f =>
