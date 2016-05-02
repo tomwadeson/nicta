@@ -298,7 +298,8 @@ find p (x :. xs)
 lengthGT4 ::
   List a
   -> Bool
-lengthGT4 = (>4) . length
+lengthGT4 (_ :. _ :. _ :. _ :. _ :. _) = True
+lengthGT4 _                            = False
 
 -- | Reverse a list.
 --
@@ -342,7 +343,7 @@ produce f x = x :. produce f (f x)
 notReverse ::
   List a
   -> List a
-notReverse = id
+notReverse = reverse -- impossible!
 
 ---- End of list exercises
 
